@@ -1,5 +1,5 @@
 // In-Class Activity 06 — Drawing with Flutter
-// Student: [Your Full Name]
+// Student: Seul An Kim
 // Date: September 26, 2026
 
 import 'package:flutter/material.dart';
