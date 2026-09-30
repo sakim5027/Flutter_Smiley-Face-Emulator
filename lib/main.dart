@@ -4,6 +4,8 @@
 
 import 'package:flutter/material.dart';
 
+import 'dart:math' show pi;
+
 void main() => runApp(const SmileyApp());
 
 class SmileyApp extends StatelessWidget {
@@ -84,6 +86,35 @@ class SmileyPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4;
     canvas.drawCircle(center, radius, border);
+
+    // Filled shape
+    final fill = Paint()
+      ..color = Colors.amber
+      ..style = PaintingStyle.fill;
+
+    // Outlined shape
+    final stroke = Paint()
+      ..color = Colors.black
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+
+    // Smile arc: drawArc uses radians, not degrees.
+    final mouthRect = Rect.fromCenter(
+      center: center + const Offset(0, 20),
+      width: radius * 1.1,
+      height: radius * 0.9,
+    );
+    canvas.drawArc(
+      mouthRect,
+      0.15 * pi, // startAngle: a little below the 3 o'clock position
+      0.70 * pi, // sweepAngle: how far the smile curves clockwise
+      false, // useCenter: false = arc only, true = pie slice
+      stroke,
+    );
+
+    // Import pi for arc angle math. Put this at the top of lib/main.dart.
   }
 
   @override
