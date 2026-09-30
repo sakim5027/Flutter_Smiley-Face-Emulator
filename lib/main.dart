@@ -36,6 +36,7 @@ class _DrawingPlaygroundState extends State<DrawingPlayground> {
   double eyeGap = 0.35;
   bool showBlush = true;
   Color faceColor = Colors.amber;
+  String selectedFace = 'happy';
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +58,8 @@ class _DrawingPlaygroundState extends State<DrawingPlayground> {
               ),
             ),
           ),
-          SizedBox(
-            height: 300,
+          Padding(
+            padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -89,26 +90,40 @@ class _DrawingPlaygroundState extends State<DrawingPlayground> {
                     onChanged: (bool? value) =>
                         setState(() => showBlush = value ?? false),
                   ),
-                  DropdownButtonFormField<Color>(
-                    value: faceColor,
-                    decoration: const InputDecoration(labelText: 'Face color'),
+                  DropdownButtonFormField<String>(
+                    value: selectedFace,
+                    decoration: const InputDecoration(labelText: 'Expression'),
                     items: const [
-                      DropdownMenuItem(
-                        value: Colors.amber,
-                        child: Text('Amber'),
-                      ),
-                      DropdownMenuItem(value: Colors.pink, child: Text('Pink')),
-                      DropdownMenuItem(
-                        value: Colors.lightBlue,
-                        child: Text('Blue'),
-                      ),
-                      DropdownMenuItem(
-                        value: Colors.lightGreen,
-                        child: Text('Green'),
-                      ),
+                      DropdownMenuItem(value: 'happy', child: Text('Happy')),
+                      DropdownMenuItem(value: 'sad', child: Text('Sad')),
+                      DropdownMenuItem(value: 'robot', child: Text('Robot')),
                     ],
-                    onChanged: (Color? value) {
-                      if (value != null) setState(() => faceColor = value);
+                    onChanged: (String? value) {
+                      if (value == null) return;
+
+                      setState(() {
+                        selectedFace = value;
+
+                        if (value == 'happy') {
+                          mood = 0.9;
+                          showBlush = true;
+                          faceColor = Colors.amber;
+                          eyeRadius = 15;
+                          eyeGap = 0.35;
+                        } else if (value == 'sad') {
+                          mood = 0.2;
+                          showBlush = false;
+                          faceColor = Colors.lightBlue;
+                          eyeRadius = 15;
+                          eyeGap = 0.35;
+                        } else if (value == 'robot') {
+                          mood = 0.5;
+                          showBlush = false;
+                          faceColor = Colors.lightGreen;
+                          eyeRadius = 12;
+                          eyeGap = 0.45;
+                        }
+                      });
                     },
                   ),
                 ],
