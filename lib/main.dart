@@ -72,47 +72,51 @@ class SmileyPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // Modules 2–3: add eyes and mouth here. Base every position on size, center, or radius.
-    final center = Offset(size.width / 2, size.height / 2);
-    final radius = size.shortestSide * 0.4;
+    final c = Offset(size.width / 2, size.height / 2);
+    final r = size.shortestSide * 0.40;
+    final faceColor = Colors.amber;
+    final eyeRadius = size.shortestSide * 0.05;
 
-    final facePaint = Paint()
-      ..color = Colors.yellow.shade600
-      ..style = PaintingStyle.fill;
+    // 1) Face
+    canvas.drawCircle(c, r, Paint()..color = faceColor);
 
-    canvas.drawCircle(center, radius, facePaint);
+    // 2) Face border
+    canvas.drawCircle(
+      c,
+      r,
+      Paint()
+        ..color = Colors.black87
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4,
+    );
 
-    final border = Paint()
+    // 3) Eyes
+    final eyePaint = Paint()..color = Colors.black87;
+    final eyeY = c.dy - r * 0.18;
+    final eyeDx = r * 0.35;
+    canvas.drawCircle(Offset(c.dx - eyeDx, eyeY), eyeRadius, eyePaint);
+    canvas.drawCircle(Offset(c.dx + eyeDx, eyeY), eyeRadius, eyePaint);
+
+    // 4) Mouth — map mood (0..1) to arc geometry
+    final mouthPaint = Paint()
       ..color = Colors.black87
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 4;
-    canvas.drawCircle(center, radius, border);
+      ..strokeWidth = 5
+      ..strokeCap = StrokeCap.round;
 
-    // Filled shape
-    final fill = Paint()
-      ..color = Colors.amber
-      ..style = PaintingStyle.fill;
-
-    // Outlined shape
-    final stroke = Paint()
-      ..color = Colors.black
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 4
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-
-    // Smile arc: drawArc uses radians, not degrees.
     final mouthRect = Rect.fromCenter(
-      center: center + const Offset(0, 20),
-      width: radius * 1.1,
-      height: radius * 0.9,
+      center: Offset(c.dx, c.dy + r * 0.15),
+      width: r * 1.0,
+      height: r * (0.4 + mood * 0.5),
     );
-    canvas.drawArc(
-      mouthRect,
-      0.15 * pi, // startAngle: a little below the 3 o'clock position
-      0.70 * pi, // sweepAngle: how far the smile curves clockwise
-      false, // useCenter: false = arc only, true = pie slice
-      stroke,
-    );
+
+    // Happy: arc along bottom; Sad: flip with negative sweep / different start
+    if (mood >= 0.5) {
+      canvas.drawArc(mouthRect, 0.15 * pi, 0.70 * pi, false, mouthPaint);
+    } else {
+      final frownRect = mouthRect.translate(0, r * 0.25);
+      canvas.drawArc(frownRect, 1.15 * pi, 0.70 * pi, false, mouthPaint);
+    }
 
     // Import pi for arc angle math. Put this at the top of lib/main.dart.
   }
